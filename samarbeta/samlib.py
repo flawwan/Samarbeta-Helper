@@ -126,17 +126,28 @@ class samlib:
 						class_red = "grey"
 					output.append("<h3>" + title.encode("utf-8") + "</h3>")
 					output.append("Status: " + "<span class='" + class_red + "'>" + status.encode("utf-8") + " ( " + betyg_status.encode("utf-8") + " )" + "</span><br>")
+
+					dina_kommentar = pqc("td.cell.c1.lastcol div.box.boxaligncenter:last p").text()
+					long_comment = pqc('[class*=full_assignfeedback_comments_]').text()
+					short_comment = pqc('[class*=summary_assignfeedback_comments_]').text()
+
+					output.append("Inlämningskommentarer: " + dina_kommentar.encode("utf-8") + "<br>")
+
+					if long_comment == "":
+						output.append("Kommentar: " + short_comment.encode("utf-8") + "<br>")
+					else:
+						output.append("Kommentar: " + long_comment.encode("utf-8") + "<br>")
+
 					for tr in trs:
 						for td in pqc(tr):
 							row = pqc(td).text()
-							if "terkoppling/kommentarer" in row:
-								output.append(row.encode("utf-8") + "<br>")
+							# if "terkoppling/kommentarer" in row:
+							# 	output.append(row.encode("utf-8") + "<br>")
 							if "Stoppdatum/tid" in row:
 								output.append(row.encode("utf-8") + "<br>")
-					output.append("<a href='" + link + "'>Link</a><br><br>")
+					output.append("<a href='" + link + "' target='_blank'>Link</a><br><br>")
 		output.append("</body></html>")
 		file_name = self.username + "_grades.html"
-		path = os.getcwd().replace("\\","/")
 		with open(file_name, 'w') as f:
 			for line in output:
 				f.write(line + '\n')
