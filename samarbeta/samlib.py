@@ -149,7 +149,7 @@ class samlib:
 
 					if long_comment == "":
 						output.append("<b>Kommentar:</b> " + short_comment.encode("utf-8") + "<br>")
-					else:
+					elif short_comment != "":
 						output.append("<b>Kommentar:</b>" + long_comment.encode("utf-8") + "<br>")
 
 					output.append("<a href='" + link + "' target='_blank'>" + link + "</a></pre><br>")
