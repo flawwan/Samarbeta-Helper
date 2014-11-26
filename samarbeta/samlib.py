@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+
 sys.path.append("../lib")
 sys.dont_write_bytecode = True
 
@@ -14,10 +15,11 @@ import time
 
 browser = Browser()
 
-class samlib:
 
+class samlib:
 	username = None
 	password = None
+
 	def __init__(self):
 		pass
 
@@ -25,13 +27,13 @@ class samlib:
 
 		self.username = raw_input("Username: ").decode(sys.stdin.encoding).encode('utf8')
 		self.password = getpass().decode(sys.stdin.encoding).encode('utf8')
-		
+
 		resp = browser.fetch("http://new.samarbeta.se/login/index.php?authldap_skipntlmsso=1", {
-			"username": self.username,
-			"password": self.password
+		"username": self.username,
+		"password": self.password
 		})
 		return resp
-	
+
 	def menu(self):
 		while True:
 			print "Wat do: "
@@ -54,7 +56,7 @@ class samlib:
 			return False
 		pq = PyQuery(html)
 		scripts = pq("script[type='text/javascript']")
-		return (pq,json.loads('{%s}' % (pq(scripts[0]).text().split(";")[3][3:].split('{', 1)[1].rsplit('}', 1)[0],))["sesskey"])
+		return (pq, json.loads('{%s}' % (pq(scripts[0]).text().split(";")[3][3:].split('{', 1)[1].rsplit('}', 1)[0],))["sesskey"])
 
 	def dump_grades(self):
 		courses = self.get_courses()
@@ -63,9 +65,15 @@ class samlib:
 			return False
 		output = []
 		pq = courses[0]
-		output.append("""<html>
+		output.append("""
+			<!DOCTYPE html>
+			<html lang="sv">
 				<head>
 					<meta charset='utf-8'/>
+					<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+					<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+					<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css\">
+
 					<style>
 						.red {
 							color: red
@@ -80,29 +88,31 @@ class samlib:
 							color: grey
 						}
 					</style>
-			    <body>""")
+			    <body>
+			    <div class="container">
+			    """)
 		for item in pq(".title a"):
 			course_id = pq(item).attr("href").split("=")[1]
 			course_name = pq(item).text()
 			output.append("<h2>### Course: " + course_name.encode("utf-8") + " ###</h2>")
 
 			data = browser.fetch("http://new.samarbeta.se/course/recent.php", {
-				'id': course_id,
-				'sesskey': courses[1],
-				'_qf__recent_form': 1,
-				'mform_showmore_id_filters': 0,
-				'mform_isexpanded_id_filters': 1,
-				'user': 0,
-				'modid': '',
-				'group': 0,
-				'sortby': 'default',
-				'date[day]': 26,
-				'date[month]': 11,
-				'date[year]': 2000,
-				'date[hour]': 10,
-				'date[minute]': 45,
-				'date[enabled]': 1,
-				'submitbutton': 'Visa senaste aktivitet'
+			'id': course_id,
+			'sesskey': courses[1],
+			'_qf__recent_form': 1,
+			'mform_showmore_id_filters': 0,
+			'mform_isexpanded_id_filters': 1,
+			'user': 0,
+			'modid': '',
+			'group': 0,
+			'sortby': 'default',
+			'date[day]': 26,
+			'date[month]': 11,
+			'date[year]': 2000,
+			'date[hour]': 10,
+			'date[minute]': 45,
+			'date[enabled]': 1,
+			'submitbutton': 'Visa senaste aktivitet'
 			})
 			pqb = PyQuery(data)
 			for item in pqb("#region-main h3"):
@@ -123,19 +133,11 @@ class samlib:
 						class_red = "orange"
 					if "*" in title:
 						class_red = "grey"
-					output.append("<h3>" + title.encode("utf-8") + "</h3>")
-					output.append("Status: " + "<span class='" + class_red + "'>" + status.encode("utf-8") + " ( " + betyg_status.encode("utf-8") + " )" + "</span><br>")
+					output.append("<pre><h3>" + title.encode("utf-8") + "</h3>")
+					output.append("<b>Status:</b> " + "<span class='" + class_red + "'>" + status.encode("utf-8") + " ( " + betyg_status.encode("utf-8") + " )" + "</span><br>")
 
-					#dina_kommentar = pqc("td.cell.c1.lastcol div.box.boxaligncenter:last p").text()
 					long_comment = pqc('[class*=full_assignfeedback_comments_]').text()
 					short_comment = pqc('[class*=summary_assignfeedback_comments_]').text()
-
-					#output.append("Inlämningskommentarer: " + dina_kommentar.encode("utf-8") + "<br>")
-
-					if long_comment == "":
-						output.append("Kommentar: " + short_comment.encode("utf-8") + "<br>")
-					else:
-						output.append("Kommentar: " + long_comment.encode("utf-8") + "<br>")
 
 					for tr in trs:
 						for td in pqc(tr):
@@ -143,9 +145,15 @@ class samlib:
 							# if "terkoppling/kommentarer" in row:
 							# 	output.append(row.encode("utf-8") + "<br>")
 							if "Stoppdatum/tid" in row:
-								output.append(row.encode("utf-8") + "<br>")
-					output.append("<a href='" + link + "' target='_blank'>Link</a><br><br>")
-		output.append("</body></html>")
+								output.append(row.replace("Stoppdatum/tid", "<b>Stoppdatum/tid</b>").encode("utf-8") + "<br>")
+
+					if long_comment == "":
+						output.append("<b>Kommentar:</b> " + short_comment.encode("utf-8") + "<br>")
+					else:
+						output.append("<b>Kommentar:</b>" + long_comment.encode("utf-8") + "<br>")
+
+					output.append("<a href='" + link + "' target='_blank'>" + link + "</a></pre><br>")
+		output.append("</div></body></html>")
 		file_name = self.username + "_grades.html"
 		with open(file_name, 'w') as f:
 			for line in output:
