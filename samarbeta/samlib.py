@@ -142,8 +142,6 @@ class samlib:
 					for tr in trs:
 						for td in pqc(tr):
 							row = pqc(td).text()
-							# if "terkoppling/kommentarer" in row:
-							# 	output.append(row.encode("utf-8") + "<br>")
 							if "Stoppdatum/tid" in row:
 								output.append(row.replace("Stoppdatum/tid", "<b>Stoppdatum/tid</b>").encode("utf-8") + "<br>")
 
