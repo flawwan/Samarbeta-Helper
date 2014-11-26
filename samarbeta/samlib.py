@@ -115,7 +115,6 @@ class samlib:
 					pqc = PyQuery(assignment)
 					status = pqc(".cell.c1:first").text()
 					betyg_status = pqc(".submissionnotgraded,.submissiongraded").text()
-					time_left = pqc(".earlysubmission.cell.c1.lastcol").text()
 					trs = pqc("tr")
 					class_red = "green"
 					if "Inga f" in status:
@@ -127,11 +126,11 @@ class samlib:
 					output.append("<h3>" + title.encode("utf-8") + "</h3>")
 					output.append("Status: " + "<span class='" + class_red + "'>" + status.encode("utf-8") + " ( " + betyg_status.encode("utf-8") + " )" + "</span><br>")
 
-					dina_kommentar = pqc("td.cell.c1.lastcol div.box.boxaligncenter:last p").text()
+					#dina_kommentar = pqc("td.cell.c1.lastcol div.box.boxaligncenter:last p").text()
 					long_comment = pqc('[class*=full_assignfeedback_comments_]').text()
 					short_comment = pqc('[class*=summary_assignfeedback_comments_]').text()
 
-					output.append("Inlämningskommentarer: " + dina_kommentar.encode("utf-8") + "<br>")
+					#output.append("Inlämningskommentarer: " + dina_kommentar.encode("utf-8") + "<br>")
 
 					if long_comment == "":
 						output.append("Kommentar: " + short_comment.encode("utf-8") + "<br>")
