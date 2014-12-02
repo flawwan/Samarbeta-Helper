@@ -1,4 +1,4 @@
-#How to use the http://new.samarbeta.se grade dumper
+#Samarbeta.se Grade Dumper Information Tool
 
 1. `python samarbeta/samarbeta.py`
 2. Login with your username and password. (Note: Your username+password are sent in plaintext to samarbeta.se)
