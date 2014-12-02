@@ -10,6 +10,8 @@
 
 I am not responsible for any damage that could be done with this. 
 
+I am in no way associated with samarbeta.se.
+
 <b>USE AT YOUR OWN RISK. YOU HAVE BEEN WARNED.</b>
 
 #License
