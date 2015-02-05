@@ -16,4 +16,4 @@ I am in no way associated with samarbeta.se.
 
 #License
 
-This project is released under the GNU license.
+This project is released under the MIT license.
